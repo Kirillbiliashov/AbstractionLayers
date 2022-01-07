@@ -1,17 +1,16 @@
-'use strict'
+'use strict';
 
-const { sendReply } = require('./httpReply');
+const { replyFactory } = require('./reply.js');
 
-const cache = () => {
-    const data = {}
-    return {
-        load: ({ url, method }, res) => {
-            if (cache[url] && method === 'GET') sendReply(res, [200], null, cache[url])
-            else return;
-        },
-        save: (key, val) => {
-            data[key] = val;
-        }
-    }
+const cache = {};
+
+const serveFromCache = (url, method) => {
+  if (cache[url] && method === 'GET') return replyFactory([200], null, cache[url]);
+  return null;
+};
+
+const saveToCache = (url, data) => {
+  cache[url] = data;
 }
-module.exports = { cache }
+
+module.exports = { serveFromCache, saveToCache };
